@@ -1,0 +1,134 @@
+---
+title: "Exercise"
+author: "Angela Zhai"
+date: "September22, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load("knitr", "ggplot2", "tidyverse", "nycflights13")
+```
+
+## 3.5.1
+
+2. What do the empty cells in plot with facet_grid(drv ~ cyl) mean? How do they relate to this plot?
+
+```{r eval=FALSE}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = drv, y = cyl))
+```
+
+The empty cells mean we cannot find such a situation for drv and cyl. 
+
+From above plot, we can find that when drv equals 4, there is no point on cyl equals 5. Similarly, the cell for drv=4 and cyl=5 is an empty cell.
+
+3. What plots does the following code make? What does . do?
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+```
+
+. is used to make a group of null. If . placed after ~, we can get no facet in column. And if . placed before ~, we will get no facet in row.
+
+
+## 3.6.1
+
+6. Recreate the R code necessary to generate the following graphs.
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  stat_smooth(se=FALSE)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  stat_smooth(mapping = aes(group = drv), se=FALSE)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  stat_smooth(se=FALSE)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = drv)) +
+  stat_smooth(se=FALSE)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = drv)) +
+  stat_smooth(mapping = aes(linetype = drv), se=FALSE)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, fill = drv)) +
+  geom_point(shape = 21, color = "white", stroke = 2)
+```
+
+
+## 5.2.4
+
+1. Find all flights that
+
+    1. Had an arrival delay of two or more hours
+```{r}
+filter(flights, arr_delay >= 2*60)
+```
+    
+  
+    2. Flew to Houston (IAH or HOU)
+```{r}
+filter(flights, dest %in% c("IAH", "HOU"))
+```
+    
+  
+    3. Were operated by United, American, or Delta
+```{r}
+filter(flights, carrier %in% c("UA", "AA", "DL"))
+```
+    
+  
+    4. Departed in summer (July, August, and September)
+```{r}
+filter(flights, month %in% c(7, 8, 9))
+```
+    
+  
+    5. Arrived more than two hours late, but didn¡¯t leave late
+```{r}
+filter(flights, arr_delay >= 2*60 & dep_delay <= 0)
+```
+    
+  
+    6. Were delayed by at least an hour, but made up over 30 minutes in flight
+```{r}
+filter(flights, dep_delay >= 60 & dep_delay-arr_delay>30)
+```
+    
+  
+    7. Departed between midnight and 6am (inclusive)
+```{r}
+filter(flights, dep_time >=0 & dep_time <= 600)
+```
+    
+    
+2. Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+
+between() is used to find values in a specified range. It can be used to simplify the last question.
+
+```{r}
+filter(flights, between(dep_time, 0, 600))
+```
+
+
+3. How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+```{r}
+filter(flights, is.na(dep_time))
+```
+
+8255 flights have a missing dep_time. Also dep_delay, arr_time, arr_delay and air_time are missing. Maybe these rows represent the flights which been canceled.
+
+4. Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+
+NA is like a placeholder here, and no matter what number be placed here the result will always be 1. Same for last two expressions, any number substitutes NA will get the result not missing.
